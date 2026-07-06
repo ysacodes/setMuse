@@ -47,5 +47,4 @@ style preferences. Modeling it as cooperating agents — rather than one
 mega-prompt — let me build, test, and reason about each piece
 independently (I can unit-test the outfit-curation logic without ever
 calling a model), which is exactly the decomposition this course spent five
-days teaching. It's also a project I'll genuinely keep using afterward,
-which felt like the right bar for a capstone.
+days teaching.
