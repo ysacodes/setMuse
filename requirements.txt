@@ -1,0 +1,23 @@
+---
+name: style_tagging
+description: >
+  Applies a controlled style-tag vocabulary to a single garment photo so
+  every closet item is comparable and filterable later. Use whenever a new
+  garment photo is uploaded to the closet library.
+inputs:
+  - image: single garment photo
+  - taxonomy: STYLE_TAXONOMY from config.py (floral, ruffles, minimalist, ...)
+---
+
+# Style Tagging Skill
+
+1. Identify the single dominant garment in frame; ignore background/props.
+2. Assign 1-3 tags strictly from the controlled taxonomy — never invent a
+   new tag, even if a more precise word exists, so tags stay filterable.
+3. Assign `formality` from the FORMALITY_SCALE, picking the *lowest* level
+   the garment could reasonably be worn at (a blazer defaults to
+   "business", not "black-tie", unless clearly tuxedo-grade).
+4. Assign `warmth_score` 1-5 based on visible fabric weight and coverage,
+   not the season the photo looks like it was taken in.
+5. Return strict JSON only — no prose — so the WardrobeManager can persist
+   the result directly.

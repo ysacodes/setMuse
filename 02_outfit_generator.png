@@ -1,0 +1,136 @@
+# Kaggle Writeup — copy/paste guide
+
+Everything below maps directly onto the fields in the Capstone writeup
+template. Paste each section into its matching field.
+
+---
+
+## Basic Details
+
+**Title** (required)
+```
+ClosetMuse — AI Closet Stylist That Reads Your Weather & Calendar
+```
+
+**Subtitle**
+```
+A multi-agent wardrobe assistant that tags your closet photos by style and plans your daily outfit around live weather and calendar context.
+```
+
+**Card and Thumbnail Image**
+```
+ui_mockups/00_card_thumbnail.png
+```
+(1200×630, matches the app's cream/tan/espresso/blush palette — upload this
+as both the card image and thumbnail if the form only accepts one file for
+both.)
+
+**Submission Tracks**
+> ⚠️ I couldn't verify the exact track names on the live competition
+> page during drafting (Kaggle competition pages render client-side, and
+> this year's tracks may differ from the course's original farming-sim
+> "Kaggriculture" framing referenced in early announcements). When you
+> open the writeup form, pick whichever track best matches:
+> - A general **"Agents for Everyday Life" / "Personal Productivity"**-style
+>   track if offered, since ClosetMuse is a personal-use daily-planning agent, or
+> - The track that explicitly calls out **multi-agent systems / ADK** if
+>   tracks are organized by technique rather than by use case.
+> Double check the dropdown on the actual submission page — it will show you the current, correct options.
+
+---
+
+## Media Gallery
+
+**Images** (upload in this order)
+1. `ui_mockups/00_card_thumbnail.png` — hero/cover image
+2. `ui_mockups/01_closet_library.png` — Closet Library screen
+3. `ui_mockups/02_outfit_generator.png` — Today's Outfit screen
+4. `ui_mockups/03_agent_architecture.png` — agent architecture diagram
+
+**Video**
+```
+Optional but recommended: record a 2-3 min screen capture of
+`python app.py --plan --location "Hong Kong" --date 2026-07-06` running in
+a terminal, narrating the pipeline as it prints weather → calendar →
+outfit rationale. This is the single highest-leverage addition you can
+make before submitting, since several past course announcements listed a
+video explanation as an expected part of the submission — do this if time
+allows before the deadline.
+```
+
+---
+
+## Content
+
+### Project Description
+```
+ClosetMuse is a multi-agent AI closet stylist. You photograph the clothes
+you already own once; a vision agent tags each item's style (floral,
+ruffles, minimalist, streetwear, etc.), formality, warmth, and season fit
+into a personal wardrobe database. Every morning, a Weather Agent and a
+Calendar Agent run in parallel to gather the day's temperature/precipitation
+and infer today's occasion (business, athletic, romantic, formal, casual)
+from your calendar events. An Outfit Curator agent then reconciles all three
+signals — closet inventory, weather, occasion — against a style-coherence
+and wardrobe-rotation heuristic to produce up to three ranked, fully
+justified outfit options.
+
+Architecture (Google ADK):
+- ParallelAgent runs the Weather Agent and Calendar Agent concurrently,
+  since neither depends on the other's output.
+- SequentialAgent feeds their combined context into the Outfit Curator
+  LlmAgent, which follows a versioned agent-skill spec
+  (skills/outfit_curation.skill.md) rather than an ad-hoc prompt.
+- A second skill (skills/style_tagging.skill.md) governs the vision agent's
+  photo-tagging behavior, keeping the style taxonomy controlled and
+  filterable across the whole closet.
+- All four core tools (weather lookup, calendar lookup, wardrobe listing,
+  outfit-feedback recording) are also exposed on a standalone MCP server
+  (mcp_server/closet_mcp_server.py), so the same data layer is reachable
+  from any MCP-compatible client, not just ClosetMuse's own agents.
+- Security guardrails (security/guardrails.py) validate every image upload
+  before it reaches the vision model, screen calendar text for
+  prompt-injection patterns before it's folded into a prompt (calendar
+  events are untrusted third-party text — anyone who can invite you to an
+  event can write its title), redact PII from model output, and enforce a
+  tool call allow-list via ADK's before_tool_callback.
+
+The whole pipeline runs in a MOCK_MODE by default (deterministic mock
+vision classifier, seeded mock weather, fixed mock calendar) so it's fully
+demoable with zero API keys — flip one flag to go live against Gemini,
+OpenWeatherMap, and Google Calendar.
+```
+
+### Rationale
+```
+I own more clothes than I can mentally track, and "what fits today's
+weather AND today's meetings" costs real decision-making time every single
+morning. That's a genuinely agentic problem, not a single-prompt one: it
+needs perception (what's actually in my closet, from photos), two
+independent live-context lookups (weather, calendar) that don't depend on
+each other, and a reasoning step that reconciles all three against personal
+style preferences. Modeling it as cooperating agents — rather than one
+mega-prompt — let me build, test, and reason about each piece
+independently (I can unit-test the outfit-curation logic without ever
+calling a model), which is exactly the decomposition this course spent five
+days teaching. It's also a project I'll genuinely keep using afterward,
+which felt like the right bar for a capstone.
+```
+
+### Project Links
+```
+Code repository: <paste your GitHub URL after you push closetmuse/>
+Live demo: (none — this is a local CLI + MCP server demo, see README "Try it in 30 seconds")
+```
+
+---
+
+## Attachments
+
+- Upload the full `closetmuse/` project as a `.zip` (code + README + tests
+  + skills + UI mockups) — see `closetmuse_project.zip` alongside this file.
+- Or, preferably, push `closetmuse/` to a public GitHub repo and link it
+  instead — judges generally prefer a browsable repo over a zip.
+- Attach `ui_mockups/03_agent_architecture.png` again here if the
+  Attachments section supports images separately from the Media Gallery —
+  judges reviewing quickly often look here first.
